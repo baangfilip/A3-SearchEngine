@@ -1,5 +1,7 @@
 package se.kb222vt.endpoint;
 
+import java.util.Collections;
+
 import com.google.gson.Gson;
 
 import se.kb222vt.app.Application;
@@ -13,11 +15,10 @@ public class SearchController {
 	private static SearchEngineLogic logic = new SearchEngineLogic();
 	
 	public static Route articleSearch = (Request request, Response response) -> {
-		String param = request.queryParams("param");
-		if(param == null)
-    		throw new IllegalArgumentException("Missing param param");
-
-    	return gson.toJson("Hello " + param);
+		String query = request.queryParams("query");
+		if(query == null)
+    		throw new IllegalArgumentException("Missing query param");
+    	return gson.toJson(logic.search(query));
 	};
     
     public static Route articles = (Request request, Response response) -> {

@@ -3,6 +3,7 @@ package se.kb222vt.app;
 import static spark.Spark.exception;
 import static spark.Spark.get;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -25,8 +26,11 @@ public class Application implements SparkApplication {
 	//putting some logic here since it will be so much overhead to put it somewhere else
 	
 	private Gson gson = new Gson();
-	private String dataFile = "webapps/searchengine/WEB-INF/classes/data/..."; //This will not work for any name for the webapp: https://github.com/perwendel/spark/pull/658/files
-	public static HashMap<String, Page> articles = new HashMap<String, Page>();
+	private HashMap<String, String> dataFolders = new HashMap<>();
+	public static HashMap<String, Page> articles = new HashMap<String, Page>();//<Title, Page>
+	
+	//we need this to translate a hashCode -> word
+	public static HashMap<String, Integer> wordMap = new HashMap<>();//<String representation of a word, Id for word>
 	
 	@Override
 	public void init() {
@@ -37,27 +41,61 @@ public class Application implements SparkApplication {
 		});
         get("/API/article/search/", SearchController.articleSearch);
         get("/API/article/", SearchController.articles);
+        
+        //add data folders if we didn't start from Initalize.java
+        if(dataFolders.size() < 1) {
+        	dataFolders.put("Games", "webapps/searchengine/WEB-INF/classes/data/wikipedia/Words/Games");
+        	dataFolders.put("Programming", "webapps/searchengine/WEB-INF/classes/data/wikipedia/Words/Programming");
+        }
+        
         try {
-        	readData();
-			System.out.println("Found: " + articles.size() + " pages");
-		} catch (IOException e) {
-			e.printStackTrace();
+			getArticlesFromDataFolders();
+		} catch (IOException e1) {
+			// TODO FIX THIS
+			e1.printStackTrace();
+		}
+		System.out.println("Found: " + articles.size() + " pages");
+		System.out.println("Found: " + wordMap.size() + " different words");
+	}
+	
+	private void getArticlesFromDataFolders() throws IOException {
+		for(String folderPath : dataFolders.values()) {
+			//read all files in folder and send to readData
+			File folder = new File(folderPath);
+			File[] listOfFiles = folder.listFiles();
+			for(int i = 0; i < listOfFiles.length; i++) {
+				String articleName = listOfFiles[i].getName();
+				articles.put(articleName, getArticle(listOfFiles[i].getPath(), articleName));
+			}
 		}
 	}
 	
-	private void readData() throws IOException {
-        Reader reader = Files.newBufferedReader(Paths.get(dataFile).toAbsolutePath());
-        CSVParser csv = new CSVParser(reader, CSVFormat.MYSQL.withFirstRecordAsHeader());
-        for (CSVRecord line : csv) {
-            String title = line.get(0);
-            Map<String, String> lineMap = line.toMap();
-            Page page = new Page();
-            articles.put(title, page);
-        }
-        csv.close();
+	private Page getArticle(String path, String articleName) throws IOException {
+        String content = new String(Files.readAllBytes(Paths.get(path).toAbsolutePath()));
+        //for the content, create a page and fix all the words
+        //so split the content and do whats needs to be done for the words
+        Page article = new Page(articleName);
+        content = content.replaceAll("\\s+", ",");
+		String[] wordsArr = content.split(",");
+		for(int i = 0; i < wordsArr.length; i++){
+			String word = wordsArr[i];
+			int wordID = wordMap.size();
+			
+			if(wordMap.containsKey(word)) {
+				//wordMap contains word since before, get the id for that word
+				wordID = wordMap.get(word);
+			}else {
+				//wordMap doesn't contain word since before, insert it and set ID for the word to wordMap.size();
+				wordMap.put(word, wordID);
+			}
+			
+			//add word to article
+			article.addWord(wordID);
+		}
+		return article; 
 	}
 	
-	public void setData(String path) {
-		this.dataFile = path;
+	public void addDataFolder(String title, String path) {
+        dataFolders.put(title, path);
 	}
 }

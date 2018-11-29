@@ -15,15 +15,11 @@
 	<div class="row mt-4 mb-4">
 		<div class="col-12">
 			<h2>Search</h2>
-			<form id="group-blogs">
+			<form id="search-articles">
 				<div class="form-group">
-					
-				</div>
-				<div class="form-group">
-					
-				</div>
-				<div class="custom-control custom-checkbox mr-sm-2 form-group">
-					
+					<label for="query">Search query</label>
+					<input type="text" class="form-control" name="query" id="query" aria-describedby="search-help" placeholder="Enter search words">
+					<small id="search-help" class="form-text text-muted">Find articles relevant to your query</small>
 				</div>
 				<button type="submit" class="btn btn-primary">Search</button>
 			</form>
@@ -34,6 +30,9 @@
 		<div class="col-12">
 			<h2>Articles</h2>
 			<div id="meta" style="display:none;">
+			</div>
+			<div id="search-results" class="list-group">
+				<span class="placeholder">Results from search will be displayed here</span>
 			</div>
 		</div> <!-- end .col-12 -->
 	</div><!-- end .row -->

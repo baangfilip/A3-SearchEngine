@@ -9,7 +9,8 @@ public class Initalize {
 		externalStaticFileLocation("src/main/webapp");
 		port(8080);
     	Application app = new Application();
-    	app.setData("src/main/resources/data/...");
+    	app.addDataFolder("Games", "src/main/resources/data/wikipedia/Words/Games");
+    	app.addDataFolder("Programming", "src/main/resources/data/wikipedia/Words/Programming");
     	app.init();
     }
 }
