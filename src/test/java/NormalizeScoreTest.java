@@ -10,9 +10,10 @@ import se.kb222vt.logic.SearchEngineLogic;
 
 public class NormalizeScoreTest {
 
+	private static SearchEngineLogic logic = new SearchEngineLogic();
+	
 	@Test
 	public void testNormalizeBiggerBetter() {
-		SearchEngineLogic logic = new SearchEngineLogic();
 		ArrayList<Page> pages = new ArrayList<>();
 		Page p1 = new Page("Firstplace");
 		p1.setScore(10);
@@ -25,7 +26,7 @@ public class NormalizeScoreTest {
 		Page p2 = new Page("Secondplace");
 		p2.setScore(8);
 		pages.add(p2);
-		logic.normalizedScore(pages, true);
+		logic.normalizeScore(pages, true);
 		
 		assertEquals("p1 should have score 1", 1, p1.getScore(), 0.00001);
 		assertEquals("p2 should have score 0.8", 0.8, p2.getScore(), 0.00001);
@@ -34,9 +35,7 @@ public class NormalizeScoreTest {
 	
 	@Test
 	public void testNormalizeSmallerBetter() {
-		SearchEngineLogic logic = new SearchEngineLogic();
 		ArrayList<Page> pages = new ArrayList<>();
-		
 		
 		Page p1 = new Page("Thirdplace");
 		p1.setScore(10); //higher is bad
@@ -49,7 +48,7 @@ public class NormalizeScoreTest {
 		Page p2 = new Page("Secondplace");
 		p2.setScore(8); //high is bad
 		pages.add(p2);
-		logic.normalizedScore(pages, false);
+		logic.normalizeScore(pages, false);
 		
 		assertEquals("p1 should have worst score", 0.2, p1.getScore(), 0.00001);
 		assertEquals("p2 should have middle score", 0.25, p2.getScore(), 0.00001);

@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 
 import se.kb222vt.endpoint.SearchController;
 import se.kb222vt.entity.Page;
+import se.kb222vt.logic.WordUtils;
 import spark.servlet.SparkApplication;
 
 //Start Application by web.xml
@@ -75,10 +76,9 @@ public class Application implements SparkApplication {
         //for the content, create a page and fix all the words
         //so split the content and do whats needs to be done for the words
         Page article = new Page(articleName);
-        content = content.replaceAll("\\s+", ",");
-		String[] wordsArr = content.split(",");
+		String[] wordsArr = WordUtils.getArrayOfWords(content);
 		for(int i = 0; i < wordsArr.length; i++){
-			String word = wordsArr[i];
+			String word = wordsArr[i].toLowerCase();
 			int wordID = wordMap.size();
 			
 			if(wordMap.containsKey(word)) {

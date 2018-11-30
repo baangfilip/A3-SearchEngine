@@ -9,6 +9,10 @@ public class Page {
 	private static final String prefixLink = "/wiki/";
 	private String title;
 	private double score;
+	private double wordFrequencyScore;
+	private double wordLocationScore;
+	private double pageRankScore;
+	
 	private String url; //full url to wikipedia article
 	private String link; //link for page rank other pages
 	private ArrayList<Integer> words = new ArrayList<>();//<WordId's for words>
@@ -33,12 +37,31 @@ public class Page {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public double getScore() {
-		return score;
+
+	public double getWordFrequencyScore() {
+		return wordFrequencyScore;
 	}
-	public void setScore(double score) {
-		this.score = score;
+
+	public void setWordFrequencyScore(double wordFrequencyScore) {
+		this.wordFrequencyScore = wordFrequencyScore;
 	}
+
+	public double getWordLocationScore() {
+		return wordLocationScore;
+	}
+
+	public void setWordLocationScore(double wordLocationScore) {
+		this.wordLocationScore = wordLocationScore;
+	}
+
+	public double getPageRankScore() {
+		return pageRankScore;
+	}
+
+	public void setPageRankScore(double pageRankScore) {
+		this.pageRankScore = pageRankScore;
+	}
+
 	
 	/**
 	 * Add a word to this blog.
@@ -53,9 +76,14 @@ public class Page {
 		return url;
 	}
 	
-	public int getInstancesOfWord(int wordID) {
-		return Collections.frequency(words, wordID);
+	public int getInstancesOfWordIDs(ArrayList<Integer> wordIDs) {
+		int hits = 0;
+		for(Integer wordID : wordIDs) {
+			hits += Collections.frequency(words, wordID);
+		}
+		return hits;
 	}
+	
 	
 	public static Comparator<Page> getArticleByScore(){   
 		 Comparator<Page> comparator = new Comparator<Page>(){
@@ -66,6 +94,10 @@ public class Page {
 		 };
 		 return comparator;
 	}
+		
+	public int getFirstIndexForWord(int wordID) {
+		return words.indexOf(wordID);
+	}
 
 	public String getLink() {
 		return link;
@@ -73,5 +105,13 @@ public class Page {
 
 	public void setLink(String link) {
 		this.link = link;
+	}
+	
+	public double getScore() {
+		return score;
+	}
+
+	public void setScore(double score) {
+		this.score = score;
 	}
 }
