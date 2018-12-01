@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Random;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import se.kb222vt.logic.SearchEngineLogic;
 
-
+@Ignore
 public class SearchEngineLogicIntegrationTest {
 	private static SearchEngineLogic logic;
 	private static HashMap<String, Integer> wordMap = new HashMap<>();//<String representation of a word, Id for word>

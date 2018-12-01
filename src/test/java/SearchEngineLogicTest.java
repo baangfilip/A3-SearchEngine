@@ -166,6 +166,13 @@ public class SearchEngineLogicTest {
 		assertEquals("wordIDs should contain 2 ids", 2, wordIDs.size());
 		assertEquals("wordIDs should contain id 1 for goodbye", true, wordIDs.contains(1));
 		assertEquals("wordIDs should contain id 7 for tjena", true, wordIDs.contains(7));
+
+		query = "GOODbye salute då TJENA goodbye";
+		wordIDs = logic.getWordIDsForQuery(query, wordMap);
+
+		assertEquals("wordIDs should contain 2 ids", 2, wordIDs.size());
+		assertEquals("wordIDs should contain id 1 for goodbye", true, wordIDs.contains(1));
+		assertEquals("wordIDs should contain id 7 for tjena", true, wordIDs.contains(7));
 	}
 	
 	@Test

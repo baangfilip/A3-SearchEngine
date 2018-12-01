@@ -145,17 +145,19 @@ public class SearchEngineLogic {
 	
 	/**
 	 * Get the wordID's for the words in the query
-	 * If the words arent in the wordMap the words wont be represented in the resulting list
+	 * If the words arent in the wordMap the words wont be represented in the resulting list.
+	 * Will ignore duplicate words
 	 * @param query
 	 * @param wordMap
 	 * @return a list with wordIDs
 	 */
 	public ArrayList<Integer> getWordIDsForQuery(String query, HashMap<String, Integer> wordMap) {
 		ArrayList<Integer> wordIDs = new ArrayList<>();
-		String[] words = WordUtils.getArrayOfWords(query);
+		String[] words = WordUtils.getArrayOfWords(query.toLowerCase());
 		for(int i = 0; i < words.length; i++) {
-			if(getIdForWord(words[i], wordMap) > -1)
-				wordIDs.add(getIdForWord(words[i].toLowerCase(), wordMap));
+			int wordID = getIdForWord(words[i], wordMap);
+			if(wordID > -1 && !wordIDs.contains(wordID))
+				wordIDs.add(wordID);
 		}
 		return wordIDs;
 	}
