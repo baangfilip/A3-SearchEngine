@@ -70,8 +70,7 @@ public class SearchEngineLogic {
 				//if we had instance of words, check for indexes aswell
 				int wordLocationScore = 0;
 				for(Integer wordID : wordIDs) {
-					//int index = p.sumIndexesOfWord(wordID);
-					int index = p.getFirstIndexForWord(wordID);
+					int index = p.sumIndexesOfWord(wordID);
 					wordLocationScore += (index > -1 ? index : INDEX_NOT_FOUND_SCORE);
 				}
 				hitPage.setWordLocationScore(wordLocationScore);

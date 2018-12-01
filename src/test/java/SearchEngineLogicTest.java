@@ -100,13 +100,13 @@ public class SearchEngineLogicTest {
 		query.add(wordMap.get(word1));
 		query.add(wordMap.get(word2));
 		
-		int p1ExpectedScore = 10; 
+		int p1ExpectedScore = 22; 
 		/*
 		 * the query has two words, both will be found for page p1
 		 * p1ExpectedScore should then be index-location for both words
-		 * index-location for word2 is = 3
+		 * index-location for word2 is = 3 + 4 + 8
 		 * index-location for word1 is = 7  
-		 * p1ExpectedScore = 10
+		 * p1ExpectedScore = 22
 		 */
 		Page p1 = new Page("Article1");
 		p1.addWord(wordMap.get(getRandomWord()));

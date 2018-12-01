@@ -32,6 +32,6 @@ public class PageRankLogic {
 			if(po.hasLinkTo(p))
 				pr += po.getPageRankScore() / po.getOutgoingLinkSize();
 		}
-		p.setPageRankScore(0.85 * pr + 0.15);
+		p.setPageRankScore((0.85 * pr) + 0.15);
 	}
 }

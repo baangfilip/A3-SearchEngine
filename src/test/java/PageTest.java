@@ -50,4 +50,16 @@ public class PageTest {
 		assertEquals("sum of indexes", -1, page.sumIndexesOfWord(3));
 	}
 	
+	@Test
+	public void testHasLinkTo() {
+		Page p = new Page("test");
+		Page anotherPage = new Page("anotherPage");
+		
+		p.addOutgoingLink("/wiki/anotherPage");
+		
+		assertEquals("test should have link to anotherPage", true, p.hasLinkTo(anotherPage));
+		assertEquals("anotherPage shouldnt have link to p", false, anotherPage.hasLinkTo(p));
+		
+	}
+	
 }
