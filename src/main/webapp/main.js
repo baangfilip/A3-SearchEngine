@@ -1,4 +1,10 @@
 $(function() {
+	$("#query").focus();
+	$("#query").on('keyup' function(e){
+		if(e.keyCode === 13){
+			$("form").submit();
+		}
+	});
 	$("form").submit(function(event) {
 		event.preventDefault();
 		$("#form-status").html("Searching..");
@@ -36,6 +42,7 @@ function getLi(index, article){
 }
 
 function searchArticles(form){
+	console.log("searchArticles");
 	let url = `API/article/search/`;
 	if(form){
 		url += `?query=${form.query}&nocache=${new Date().getTime()}`;
