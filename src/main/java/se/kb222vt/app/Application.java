@@ -98,4 +98,12 @@ public class Application implements SparkApplication {
 	public void addDataFolder(String title, String path) {
         dataFolders.put(title, path);
 	}
+	
+	public static HashMap<String, Page> getArticles(){
+		return articles;
+	}
+	
+	public static HashMap<String, Integer> getWordMap(){
+		return wordMap;
+	}
 }

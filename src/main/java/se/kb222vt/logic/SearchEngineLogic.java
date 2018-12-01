@@ -9,6 +9,8 @@ import se.kb222vt.app.Application;
 import se.kb222vt.entity.Page;
 
 public class SearchEngineLogic {
+	public static double DIVISION_BY_ZERO_SAFETY = 0.00001;
+	public static int INDEX_NOT_FOUND_SCORE = 100000;
 
 	
 	public boolean pageRank() {
@@ -21,33 +23,44 @@ public class SearchEngineLogic {
 		return false;
 	}
 	
+	/**
+	 * Search for articles with query.
+	 * Right now uses location of query words in articles and instances of words in articles to determine score
+	 * @param query
+	 * @return List of maximum 5 pages with scores
+	 */
 	public List<Page> search(String query){
-		//which methods to use....
-		ArrayList<Page> result = wordRanking(getWordIDsForQuery(query, Application.wordMap), Application.articles);
-		
-		//TODO: Normalize correct score
-		normalizeScore(result, true);
+		//Get word ranking scores
+		ArrayList<Integer> wordIDs = getWordIDsForQuery(query, Application.getWordMap());
+		ArrayList<Page> result = wordRanking(wordIDs, Application.getArticles());
+		normalizeWordRankingScores(result);
 		
 		//weigh the different scores together to a finalScore
-		for(Page p : result) {
-			
-		}
+		summarizeScores(result);
 		Collections.sort(result, Page.getArticleByScore());
 		int maxResult = result.size() > 4 ? 5 : result.size();
 		return result.subList(0, maxResult);
 	}
 	
+	/**
+	 * Summarize Page-objects different ranking scores to one score
+	 * @param pages
+	 */
+	public void summarizeScores(ArrayList<Page> pages) {
+		//weigh the different scores together to a finalScore
+		for(Page p : pages) {
+			//word_frequency + 0.8 * document_location
+			p.setScore(p.getWordFrequencyScore() + 0.8 * p.getWordLocationScore());
+		}
+	}
+	
 	
 	/**
-	 * Look through pages with the wordIDs appear in them and sets the score of the article to the number of times it appears
-	 * @param query
-	 * @param articles 
+	 * Look through articles and find the ones with with wordIDs in them, if a wordIDs are found in article we will find get the location score for the article aswell
+	 * @param query wordIDs for corresponding to the words to find in articles
+	 * @param articles list of articles to search for query in
 	 * @return list of blogs with the word from param query in them
 	 */
-	//------------------------- TODO ---------------------------------
-	//TODO: also score by document location metric, I think that must be included in this algorithm, to not loop to many times...
-	//TODO: word_frequency + 0.8 * document_location
-	//------------------------- ---- ---------------------------------
 	public ArrayList<Page> wordRanking(ArrayList<Integer> wordIDs, HashMap<String, Page> articles) {
 		//THOUGT: use treemap, to avoid sorting the list later? naah, really need to combine result later and then sort it anyways
 		ArrayList<Page> result = new ArrayList<Page>();
@@ -59,14 +72,14 @@ public class SearchEngineLogic {
 				Page hitPage = new Page(p);
 				hitPage.setWordFrequencyScore(instanceOfWord);
 				result.add(hitPage);
+				//if we had instance of words, check for indexes aswell
+				int wordLocationScore = 0;
+				for(Integer wordID : wordIDs) {
+					int index = p.getFirstIndexForWord(wordID);
+					wordLocationScore += (index > -1 ? index : INDEX_NOT_FOUND_SCORE);
+				}
+				hitPage.setWordLocationScore(wordLocationScore);
 			}
-			int wordLocationScore = 0;
-			for(Integer wordID : wordIDs) {
-				int index = p.getFirstIndexForWord(wordID);
-				int notFoundScore = 100000;
-				wordLocationScore += (index > -1 ? index : notFoundScore);
-			}
-			p.setWordLocationScore(wordLocationScore);
 		}
 		return result;
 	}
@@ -84,36 +97,60 @@ public class SearchEngineLogic {
 	}
 	
 	/**
-	 * Normalize score for pages
-	 * Algorithm inspiration from: http://coursepress.lnu.se/kurs/web-intelligence/files/2018/10/4.-Search-Engines.pdf page 19
-	 * @param pages
-	 * @param biggerBetter
+	 * Normalize the word ranking scores (wordLocationScore and wordFrequencyScore)
+	 * @param pages list of the articles to normalize the score on
 	 */
-	public void normalizeScore(ArrayList<Page> pages, boolean biggerBetter) {
-		if(biggerBetter) {			
-			double maxScore = 0;
-			//get max score of the result
-			for(Page p : pages) {
-				if(p.getScore() > maxScore)
-					maxScore = p.getScore();
-			}
-			//divide every score by maxscore to get scores between 0 and 1
-			for(Page p : pages) {
-				p.setScore(p.getScore() / maxScore);
-			}
-		}else {
-			//smaller score is better, normalize this to be the range of: 1 for best score and 0 for worst instead 
-			double minScore = Double.MAX_VALUE;
-			for(Page p : pages) {
-				if(p.getScore() < minScore)
-					minScore = p.getScore();
-			}
-			for(Page p : pages) {		//avoid division by zero
-				p.setScore(minScore / (p.getScore() == 0 ? 0.00001 : p.getScore()));
-			}
+	public void normalizeWordRankingScores(ArrayList<Page> pages) {
+		//Reasoning for code here: this prevents one extra iterations of the pages and no need to repeat normalize function for different score attributes.
+		double minLocScore = Double.MAX_VALUE, minInstScore = Double.MAX_VALUE, maxLocScore = 0, maxInstScore = 0;
+		//get the min and max scores for word rankings for the pages
+		for(Page p : pages) {
+			if(p.getWordLocationScore() > maxLocScore)
+				maxLocScore = p.getWordLocationScore();
+
+			if(p.getWordFrequencyScore() > maxInstScore)
+				maxInstScore = p.getWordFrequencyScore();
+
+			if(p.getWordLocationScore() < minLocScore)
+				minLocScore = p.getWordLocationScore();
+
+			if(p.getWordFrequencyScore() < minInstScore)
+				minInstScore = p.getWordFrequencyScore();
+		}
+		for(Page p : pages) {
+			double normalizedLocationScore = normalizeScore(p.getWordLocationScore(), false, minLocScore, maxLocScore);
+			p.setWordLocationScore(normalizedLocationScore);
+			double normalizedFrequencyScore = normalizeScore(p.getWordFrequencyScore(), true, minInstScore, maxInstScore);
+			p.setWordFrequencyScore(normalizedFrequencyScore);
 		}
 	}
 	
+	/**
+	 * Normalize score to always have higher is better and be between 0 and 1 
+	 * Algorithm inspiration from: http://coursepress.lnu.se/kurs/web-intelligence/files/2018/10/4.-Search-Engines.pdf page 19
+	 * @param score score to normalize
+	 * @param biggerBetter is the score before normalized better if its bigger
+	 * @param min used if smallerIsBetter 
+	 * @param max used if biggerIsBetter
+	 * @return 
+	 */
+	public double normalizeScore(double score, boolean biggerBetter, double min, double max) {
+		if(biggerBetter) {			
+			//divide score by maxscore to get scores between 0 and 1
+			return (score / max);
+		}else {
+			//smaller score is better, normalize this to be the range of: 1 for best score and 0 for worst instead 
+			return (min / (score == 0 ? DIVISION_BY_ZERO_SAFETY : score));
+		}
+	}
+	
+	/**
+	 * Get the wordID's for the words in the query
+	 * If the words arent in the wordMap the words wont be represented in the resulting list
+	 * @param query
+	 * @param wordMap
+	 * @return a list with wordIDs
+	 */
 	public ArrayList<Integer> getWordIDsForQuery(String query, HashMap<String, Integer> wordMap) {
 		ArrayList<Integer> wordIDs = new ArrayList<>();
 		String[] words = WordUtils.getArrayOfWords(query);
