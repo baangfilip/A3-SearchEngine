@@ -58,11 +58,7 @@ public class Application implements SparkApplication {
 		}
 		System.out.println("Found: " + articles.size() + " pages");
 		System.out.println("Found: " + wordMap.size() + " different words");
-		System.out.println("Outgoing link sizes for articles: ");
-		for(Page p : articles.values()) {
-			System.out.print(p.getTitle() + " " + p.getOutgoingLinkSize() + " ");
-		}
-		System.out.println("");
+		
 		//calculate the PageRank for articles
 		PageRankLogic.calculatePageRank(articles, 20);
 	}
