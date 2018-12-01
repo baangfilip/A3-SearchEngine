@@ -149,10 +149,10 @@ public class SearchEngineLogicTest {
 		int pagesTested = 0;
 		for(Page p : pagesWithScore) {
 			if(p.getTitle().equals(p1.getTitle())) {
-				assertEquals("p1 should have found word nbr of times", p1ExpectedScore, p.getWordLocationScore(), 0.00001);
+				assertEquals("p1 should location", p1ExpectedScore, p.getWordLocationScore(), 0.00001);
 				pagesTested++;
 			}else if(p.getTitle().equals(p2.getTitle())) {
-				assertEquals("p2 should have found word nbr of times", p2ExpectedScore, p.getWordLocationScore(), 0.00001);
+				assertEquals("p2 should location", p2ExpectedScore, p.getWordLocationScore(), 0.00001);
 				pagesTested++;
 			}
 		}
@@ -205,9 +205,9 @@ public class SearchEngineLogicTest {
 		p3.setWordLocationScore(2); //higher is bad
 		pages.add(p3);
 		
-		double p1ExpectedScore = p1.getWordFrequencyScore() + 0.8 * p1.getWordLocationScore();
-		double p2ExpectedScore = p2.getWordFrequencyScore() + 0.8 * p2.getWordLocationScore();
-		double p3ExpectedScore = p3.getWordFrequencyScore() + 0.8 * p3.getWordLocationScore();
+		double p1ExpectedScore = p1.getWordFrequencyScore() + (0.5 * p1.getWordLocationScore()) + p1.getPageRankScore();
+		double p2ExpectedScore = p2.getWordFrequencyScore() + (0.5 * p2.getWordLocationScore()) + p1.getPageRankScore();
+		double p3ExpectedScore = p3.getWordFrequencyScore() + (0.5 * p3.getWordLocationScore()) + p1.getPageRankScore();
 		
 		logic.summarizeScores(pages);
 		int pagesTested = 0;
@@ -225,4 +225,5 @@ public class SearchEngineLogicTest {
 		}
 		assertEquals("We should get back all 3 pages with results", 3, pagesTested);
 	}
+	
 }

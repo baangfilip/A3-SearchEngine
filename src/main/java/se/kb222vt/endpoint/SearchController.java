@@ -1,6 +1,5 @@
 package se.kb222vt.endpoint;
 
-import java.util.Collections;
 
 import com.google.gson.Gson;
 

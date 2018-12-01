@@ -11,19 +11,21 @@ public class Page {
 	private double score;
 	private double wordFrequencyScore;
 	private double wordLocationScore;
-	private double pageRankScore;
+	private double pageRankScore = 1.0;
 	
 	private String url; //full url to wikipedia article
 	private String link; //link for page rank other pages
+	private ArrayList<String> outgoingLinks = new ArrayList<>(); //link for page rank other pages
 	private ArrayList<Integer> words = new ArrayList<>();//<WordId's for words>
 	
 	/**
-	 * Create a copy of the Page with only title and url
+	 * Create a copy of the Page with only title, link, pageRankScore and url
 	 */
 	public Page(Page p) {
 		this.title = p.getTitle();
 		this.url = prefixUrl + p.getLink();
 		this.link = p.getLink();
+		this.pageRankScore = p.getPageRankScore();
 	}
 	
 	public Page(String title) {
@@ -94,9 +96,33 @@ public class Page {
 		 };
 		 return comparator;
 	}
-		
+	
+	/**
+	 * Returns the index for the first occurence of the word
+	 * @param wordID
+	 * @return
+	 */
 	public int getFirstIndexForWord(int wordID) {
 		return words.indexOf(wordID);
+	}
+	
+	/**
+	 * Sums all the indexes where the word appears
+	 * @param wordID
+	 * @return
+	 */
+	public int sumIndexesOfWord(int wordID) {
+		int matchIndexCounter = 0;
+		int i = 0;
+		boolean found = false;
+		for(Integer id : words) {
+			if(id == wordID) {
+				matchIndexCounter += i;
+				found = true;
+			}
+			i++;
+		}
+		return (found ? matchIndexCounter : -1);
 	}
 
 	public String getLink() {
@@ -114,4 +140,17 @@ public class Page {
 	public void setScore(double score) {
 		this.score = score;
 	}
+
+	public int getOutgoingLinkSize() {
+		return outgoingLinks.size();
+	}
+
+	public void addOutgoingLink(String outgoingLink) {
+		outgoingLinks.add(outgoingLink);
+	}
+	
+	public boolean hasLinkTo(Page page) {
+		return outgoingLinks.contains(page.getLink());
+	}
+	
 }

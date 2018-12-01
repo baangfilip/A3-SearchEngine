@@ -13,16 +13,6 @@ public class SearchEngineLogic {
 	public static int INDEX_NOT_FOUND_SCORE = 100000;
 
 	
-	public boolean pageRank() {
-		//TODO: implement page rank
-		/*
-		 Run the algorithm for 20 iterations
-		 Results shall be ranked using:
-		 score = word_frequency + 0.8 * document_location + 0.5 * pagerank
-		 */
-		return false;
-	}
-	
 	/**
 	 * Search for articles with query.
 	 * Right now uses location of query words in articles and instances of words in articles to determine score
@@ -49,8 +39,13 @@ public class SearchEngineLogic {
 	public void summarizeScores(ArrayList<Page> pages) {
 		//weigh the different scores together to a finalScore
 		for(Page p : pages) {
-			//word_frequency + 0.8 * document_location
-			p.setScore(p.getWordFrequencyScore() + 0.8 * p.getWordLocationScore());
+			//p.setScore(p.getWordFrequencyScore() + 0.8 * p.getWordLocationScore()); //whitout pageRank
+			
+			//score = 1.0 * WordFrequency + 1.0 * PageRank + 0.5 * DocumentLocation
+			p.setScore((1.0 * p.getWordFrequencyScore()) + (1.0 * p.getPageRankScore()) + (0.5 * p.getWordLocationScore())); //with pageRank FROM slides 
+			
+			//score = word_frequency + 0.8 * document_location + 0.5 * pagerank
+			//p.setScore(1.0 * p.getWordFrequencyScore() + 1.0 * p.getPageRankScore() + 0.5 * p.getWordLocationScore()); //TODO: with pageRank FROM assignment
 		}
 	}
 	
@@ -75,6 +70,7 @@ public class SearchEngineLogic {
 				//if we had instance of words, check for indexes aswell
 				int wordLocationScore = 0;
 				for(Integer wordID : wordIDs) {
+					//int index = p.sumIndexesOfWord(wordID);
 					int index = p.getFirstIndexForWord(wordID);
 					wordLocationScore += (index > -1 ? index : INDEX_NOT_FOUND_SCORE);
 				}
@@ -140,6 +136,10 @@ public class SearchEngineLogic {
 			return (score / max);
 		}else {
 			//smaller score is better, normalize this to be the range of: 1 for best score and 0 for worst instead 
+			/*if(score == 0)
+				return 0;
+			else
+				return min/score;*/
 			return (min / (score == 0 ? DIVISION_BY_ZERO_SAFETY : score));
 		}
 	}
@@ -156,7 +156,7 @@ public class SearchEngineLogic {
 		String[] words = WordUtils.getArrayOfWords(query);
 		for(int i = 0; i < words.length; i++) {
 			if(getIdForWord(words[i], wordMap) > -1)
-				wordIDs.add(getIdForWord(words[i], wordMap));
+				wordIDs.add(getIdForWord(words[i].toLowerCase(), wordMap));
 		}
 		return wordIDs;
 	}
