@@ -212,9 +212,9 @@ public class SearchEngineLogicTest {
 		p3.setWordLocationScore(2); //higher is bad
 		pages.add(p3);
 		
-		double p1ExpectedScore = p1.getWordFrequencyScore() + (0.5 * p1.getWordLocationScore()) + p1.getPageRankScore();
-		double p2ExpectedScore = p2.getWordFrequencyScore() + (0.5 * p2.getWordLocationScore()) + p1.getPageRankScore();
-		double p3ExpectedScore = p3.getWordFrequencyScore() + (0.5 * p3.getWordLocationScore()) + p1.getPageRankScore();
+		double p1ExpectedScore = p1.getWordFrequencyScore() + (0.8 * p1.getWordLocationScore()) + (0.5 * p1.getPageRankScore());
+		double p2ExpectedScore = p2.getWordFrequencyScore() + (0.8 * p2.getWordLocationScore()) + (0.5 * p1.getPageRankScore());
+		double p3ExpectedScore = p3.getWordFrequencyScore() + (0.8 * p3.getWordLocationScore()) + (0.5 * p1.getPageRankScore());
 		
 		logic.summarizeScores(pages);
 		int pagesTested = 0;
