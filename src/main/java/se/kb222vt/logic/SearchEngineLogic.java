@@ -135,10 +135,6 @@ public class SearchEngineLogic {
 			return (score / max);
 		}else {
 			//smaller score is better, normalize this to be the range of: 1 for best score and 0 for worst instead 
-			/*if(score == 0)
-				return 0;
-			else
-				return min/score;*/
 			return (min / (score == 0 ? DIVISION_BY_ZERO_SAFETY : score));
 		}
 	}

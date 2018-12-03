@@ -13,4 +13,4 @@ Use gradle to build the project and you get a clustering.war file that can be de
 # Note
 - The data files is still in zip
 - Will skip duplicate articles
-- Locations to files that represent articles containing the words and corresponding link files are to the coded to the structure of this application
+- Locations to files that represent articles containing the words and corresponding link files are coded to the structure of this application
