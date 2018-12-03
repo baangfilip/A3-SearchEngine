@@ -1,6 +1,6 @@
 $(function() {
 	$("#query").focus();
-	$("#query").on('keyup' function(e){
+	$("#query").on('keyup', function(e){
 		if(e.keyCode === 13){
 			$("form").submit();
 		}

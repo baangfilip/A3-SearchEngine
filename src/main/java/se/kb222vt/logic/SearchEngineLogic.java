@@ -39,13 +39,13 @@ public class SearchEngineLogic {
 	public void summarizeScores(ArrayList<Page> pages) {
 		//weigh the different scores together to a finalScore
 		for(Page p : pages) {
-			//p.setScore(p.getWordFrequencyScore() + 0.8 * p.getWordLocationScore()); //whitout pageRank
+			/*p.setScore(p.getWordFrequencyScore() + 0.8 * p.getWordLocationScore()); //whitout pageRank
 			
 			//score = 1.0 * WordFrequency + 1.0 * PageRank + 0.5 * DocumentLocation
 			p.setScore((1.0 * p.getWordFrequencyScore()) + (1.0 * p.getPageRankScore()) + (0.5 * p.getWordLocationScore())); //with pageRank FROM slides 
-			
+			*/
 			//score = word_frequency + 0.8 * document_location + 0.5 * pagerank
-			//p.setScore(1.0 * p.getWordFrequencyScore() + 1.0 * p.getPageRankScore() + 0.5 * p.getWordLocationScore()); //TODO: with pageRank FROM assignment
+			p.setScore(p.getWordFrequencyScore() + 0.8 * p.getWordLocationScore() +  0.5 * p.getPageRankScore()); 
 		}
 	}
 	
