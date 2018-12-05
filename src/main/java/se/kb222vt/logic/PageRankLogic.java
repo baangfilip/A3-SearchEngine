@@ -19,6 +19,7 @@ public class PageRankLogic {
 				pageRank(p, pages);
 			}
 		}
+		normalizePageRank(pages);
 	}
 	
 	/**
@@ -32,6 +33,21 @@ public class PageRankLogic {
 			if(po.hasLinkTo(p))
 				pr += po.getPageRankScore() / po.getOutgoingLinkSize();
 		}
-		p.setPageRankScore((0.85 * pr) + 0.15);
+		p.setPageRankScore(0.85 * pr + 0.15);
+	}
+	
+	/**
+	 * Normalize the page rank score for pages. Makes the score go between 1 and 0, 1 for the best score and 0 for the worst score.
+	 * @param pages
+	 */
+	public static void normalizePageRank(HashMap<String, Page> pages) {
+		double maxPageRank = 0;
+		for(Page p : pages.values()) {
+			if(p.getPageRankScore() > maxPageRank)
+				maxPageRank = p.getPageRankScore();
+		}
+		for(Page p : pages.values()) {
+			p.setPageRankScore(p.getPageRankScore() / maxPageRank);
+		}
 	}
 }
