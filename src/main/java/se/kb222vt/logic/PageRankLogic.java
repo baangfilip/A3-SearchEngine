@@ -3,7 +3,9 @@ package se.kb222vt.logic;
 import java.util.HashMap;
 
 import se.kb222vt.entity.Page;
-
+/*
+ * Algorithm inspiration from: http://coursepress.lnu.se/kurs/web-intelligence/files/2018/10/4.-Search-Engines.pdf page 42
+ */
 public class PageRankLogic {
 	
 	/**
